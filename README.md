@@ -6,4 +6,3 @@ Players can dig different (configured in config) graves to get reward item (conf
 Players can also pray (animation) at graves.
 One grave can be robbed only once per server/script restart.
 
-https://www.youtube.com/watch?v=DpX_Uguh1I4
