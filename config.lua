@@ -1,31 +1,37 @@
 Config = {}
 
-Config.framework = "redemrp" --"redemrp" or "vorp" or "qbr"
+Config.framework = "vorp" --"redemrp" or "vorp" or "qbr"
 
-Config.PrayAnim =  {
-    {"amb_misc@world_human_pray_rosary@base", "base"},
-    {"amb_misc@prop_human_seat_pray@male_b@idle_b", "idle_d"},
-    {"script_common@shared_scenarios@stand@random@town_burial@stand_mourn@male@react_look@loop@generic", "front"},
-    {"amb_misc@world_human_grave_mourning@kneel@female_a@idle_a", "idle_a"},
-    {"script_common@shared_scenarios@kneel@mourn@female@a@base", "base"},
-    {"amb_misc@world_human_grave_mourning@female_a@idle_a", "idle_a"},
-    {"amb_misc@world_human_grave_mourning@male_b@idle_c", "idle_g"},
-    {"amb_misc@world_human_grave_mourning@male_b@idle_c", "idle_h"},
+Config.PrayAnim = {
+    { "amb_misc@world_human_pray_rosary@base", "base" },
+    { "amb_misc@prop_human_seat_pray@male_b@idle_b", "idle_d" },
+    { "script_common@shared_scenarios@stand@random@town_burial@stand_mourn@male@react_look@loop@generic", "front" },
+    { "amb_misc@world_human_grave_mourning@kneel@female_a@idle_a", "idle_a" },
+    { "script_common@shared_scenarios@kneel@mourn@female@a@base", "base" },
+    { "amb_misc@world_human_grave_mourning@female_a@idle_a", "idle_a" },
+    { "amb_misc@world_human_grave_mourning@male_b@idle_c", "idle_g" },
+    { "amb_misc@world_human_grave_mourning@male_b@idle_c", "idle_h" },
 }
 
-Config.ShovelItem = "shovel" --inventory name of the shovel item for grave dig
-Config.DiggingTimer = 20--seconds
+Config.ShovelItem = "water" --inventory name of the shovel item for grave dig
+Config.DiggingTimer = 20 --seconds
 Config.Dig = {
     shovel = `p_shovel02x`,
-    anim = {"amb_work@world_human_gravedig@working@male_b@idle_a", "idle_a"},
+    anim = { "amb_work@world_human_gravedig@working@male_b@idle_a", "idle_a" },
     bone = "skel_r_hand",
-    pos = {0.06, -0.06, -0.03, 270.0, 165.0, 17.0},
+    pos = { 0.06, -0.06, -0.03, 270.0, 165.0, 17.0 },
 }
 
 Config.Rewards = {
-    {item = "golden_ring", label = "Golden Ring"},
-    {item = "golden_nugget", label = "Golden Nugget"},
-    {item = "rock", label = "Rock"},
+    { item = "golden_ring", label = "Golden Ring" },
+    { item = "goldnugget", label = "Gold Nugget" },
+    { item = "rock", label = "Rock" },
+    { item = 'diamond', label = 'Diamond' },
+    { item = 'provision_diamond_ring', label = 'Diamond Ring' },
+    { item = 'goldbar', label = 'Gold Bar' },
+    { item = 'provision_ring_silver', label = 'Silver Ring' },
+    { item = 'provision_ring_platinum', label = 'Platinum Ring' },
+    { item = 'provision_disco_emerald', label = 'Emerald Necklace' },
 }
 
 Config.Prompts = {
@@ -45,12 +51,15 @@ Config.Texts = {
 }
 
 Config.Textures = {
-    cross = {"scoretimer_textures", "scoretimer_generic_cross"},
-    locked = {"menu_textures","stamp_locked_rank"},
-    tick = {"scoretimer_textures","scoretimer_generic_tick"},
-    money = {"inventory_items", "money_moneystack"},
-    alert = {"menu_textures", "menu_icon_alert"},
+    cross = { "scoretimer_textures", "scoretimer_generic_cross" },
+    locked = { "menu_textures", "stamp_locked_rank" },
+    tick = { "scoretimer_textures", "scoretimer_generic_tick" },
+    money = { "inventory_items", "money_moneystack" },
+    alert = { "menu_textures", "menu_icon_alert" },
 }
+
+Config.JobsToAlert = { "police", "sheriff" } -- to alert these jobs if they are on duty using society
+Config.synSociety = true
 
 Config.Graves = {
     --Rhodes
@@ -203,6 +212,146 @@ Config.Graves = {
         name = "Unknown",
         coords = vector3(1296.455, -1210.326, 81.760),
         heading = 26.106,
+    },
+    [31] = {
+        name = "John Irish",
+        coords = vector3(-249.77, 818.89, 122.2),
+        heading = 303.62,
+    },
+    [32] = {
+        name = "Charles Leon",
+        coords = vector3(-239.56, 819.72, 123.74),
+        heading = 288.82,
+    },
+    [33] = {
+        name = "Evangeline Lewis-Wyatt",
+        coords = vector3(-235.83, 821.2, 124.16),
+        heading = 304.42,
+    },
+    [34] = {
+        name = "Larry Wilder",
+        coords = vector3(-241.77, 827.13, 123.23),
+        heading = 291.7,
+    },
+    [35] = {
+        name = "Jermiah Michaels",
+        coords = vector3(-239.8, 822.19, 123.66),
+        heading = 289.63,
+    },
+    [36] = {
+        name = "Andrew Tate",
+        coords = vector3(-245.94, 819.66, 122.74),
+        heading = 298.87,
+    },
+    [37] = {
+        name = "Major Marquis Warren",
+        coords = vector3(-247.37, 812.04, 122.4),
+        heading = 298.09,
+    },
+    [38] = {
+        name = "Daisy Domergue",
+        coords = vector3(-241.51, 809.03, 122.75),
+        heading = 298.87,
+    },
+    [39] = {
+        name = "Ash Benedict",
+        coords = vector3(-242.4, 812.29, 123.02),
+        heading = 295.31,
+    },
+    [40] = {
+        name = "Donny Donowitz",
+        coords = vector3(-239.52, 812.97, 123.55),
+        heading = 294.21,
+    },
+    [41] = {
+        name = "Reginald Wyatt",
+        coords = vector3(-236.24, 812.84, 123.95),
+        heading = 296.19,
+    },
+    [42] = {
+        name = "Calamity Jane",
+        coords = vector3(-241.25, 816.23, 123.53),
+        heading = 294.52,
+    },
+    [43] = {
+        name = "Jesse James",
+        coords = vector3(-242.23, 818.18, 123.37),
+        heading = 294.09,
+    },
+    [44] = {
+        name = "William H. Bonney",
+        coords = vector3(-243.06, 819.82, 123.21),
+        heading = 295.12,
+    },
+    [45] = {
+        name = "Wyatt Earp",
+        coords = vector3(-244.42, 823.44, 122.92),
+        heading = 294.1,
+    },
+    [46] = {
+        name = "Harvey Logan",
+        coords = vector3(-245.29, 825.8, 122.72),
+        heading = 292.7,
+    },
+    [47] = {
+        name = "John H. Holliday",
+        coords = vector3(-246.14, 828.25, 122.49),
+        heading = 293.48,
+    },
+    [48] = {
+        name = "William Bennington",
+        coords = vector3(-959.77, -1198.75, 56.15),
+        heading = 359.89,
+    },
+    [49] = {
+        name = "Henry Hilton",
+        coords = vector3(-960.39, -1209.41, 55.03),
+        heading = 4.59,
+    },
+    [50] = {
+        name = "Jeffrey Myers",
+        coords = vector3(-956.82, -1209.58, 54.92),
+        heading = 354.25,
+    },
+    [51] = {
+        name = "Sam Davids",
+        coords = vector3(-954.61, -1204.39, 55.53),
+        heading = 353.07,
+    },
+    [52] = {
+        name = "Oliver Campo",
+        coords = vector3(-954.22, -1193.28, 55.96),
+        heading = 5.57,
+    },
+    [53] = {
+        name = "Freddie Tik",
+        coords = vector3(-957.16, -1192.93, 56.53),
+        heading = 11.05,
+    },
+    [54] = {
+        name = "Pablo Gomez",
+        coords = vector3(-5446.67, -2903.56, 1.01),
+        heading = 316.63,
+    },
+    [55] = {
+        name = "Daniel Brown",
+        coords = vector3(-5455.56, -2909.63, 0.87),
+        heading = 111.25,
+    },
+    [56] = {
+        name = "Zach Franklin",
+        coords = vector3(-5456.38, -2906.22, 0.83),
+        heading = 98.56,
+    },
+    [57] = {
+        name = "Wyatt Dirt",
+        coords = vector3(-5456.23, -2903.22, 0.85),
+        heading = 72.29,
+    },
+    [58] = {
+        name = "Samantha Stone",
+        coords = vector3(-5460.42, -2904.91, 0.87),
+        heading = 84.73,
     },
 }
 
