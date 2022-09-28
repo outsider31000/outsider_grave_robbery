@@ -116,17 +116,20 @@ end)
 
 AddEventHandler('outsider_alertjobs', function(Town)
     for _, jobHolder in pairs(stafftable) do
-        local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, Config.JobsToAlert)
-        if Config.synSociety then
-            if onduty then
+        for key, v in pairs(Config.JobsToAlert) do
+
+            local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, v)
+            if Config.synSociety then
+                if onduty then
+                    VorpCore.NotifyLeft(jobHolder, Town, "grave robbery was witnessed ", "generic_textures",
+                        "temp_pedshot", 8000,
+                        "COLOR_WHITE")
+                end
+            else
                 VorpCore.NotifyLeft(jobHolder, Town, "grave robbery was witnessed ", "generic_textures",
                     "temp_pedshot", 8000,
                     "COLOR_WHITE")
             end
-        else
-            VorpCore.NotifyLeft(jobHolder, Town, "grave robbery was witnessed ", "generic_textures",
-                "temp_pedshot", 8000,
-                "COLOR_WHITE")
         end
     end
 end)
