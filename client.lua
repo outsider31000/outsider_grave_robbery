@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local TEXTS = Config.Texts
 local TEXTURES = Config.Textures
 local pcoords = nil
@@ -5,7 +6,6 @@ local isdead = nil
 local praying = false
 local digging = true
 local shovelObject = nil
-local BlipEntities
 local PromptKey
 local PromptKey2
 local PromptGroup = GetRandomIntInRange(0, 0xffffff)
@@ -106,7 +106,18 @@ AddEventHandler("ricx_grave_robbery:dig", function(id)
     if digging then
         EndShovel()
     else
-        TriggerServerEvent("ricx_grave_robbery:check_shovel", id, Town)
+        local hour = GetClockHours()
+        if Config.UseHours then
+            if hour >= Config.Hours[1] or hour < Config.Hours[2] then
+                TriggerServerEvent("ricx_grave_robbery:check_shovel", id, Town)
+            elseif hour >= Config.Hours[2] then
+                TriggerEvent("Notification:left_grave_robbery", TEXTS.GraveRobbery, "Can only be robbed at night",
+                    TEXTURES.alert[1],
+                    TEXTURES.alert[2], 2000)
+            end
+        else
+            TriggerServerEvent("ricx_grave_robbery:check_shovel", id, Town)
+        end
     end
 end)
 
@@ -206,38 +217,15 @@ end)
 
 RegisterNetEvent('Notification:left_grave_robbery')
 AddEventHandler('Notification:left_grave_robbery', function(t1, t2, dict, txtr, timer)
-    if Config.framework == "redemrp" then
-        local _dict = tostring(dict)
-        if not HasStreamedTextureDictLoaded(_dict) then
-            RequestStreamedTextureDict(_dict, true)
-            while not HasStreamedTextureDictLoaded(_dict) do
-                Citizen.Wait(5)
-            end
-        end
-        if txtr ~= nil then
-            exports.ricx_grave_robbery.LeftNot(0, tostring(t1), tostring(t2), tostring(dict), tostring(txtr),
-                tonumber(timer))
-        else
-            local txtr = "tick"
-            exports.ricx_grave_robbery.LeftNot(0, tostring(t1), tostring(t2), tostring(dict), tostring(txtr),
-                tonumber(timer))
-        end
-        SetStreamedTextureDictAsNoLongerNeeded(_dict)
-    elseif Config.framework == "vorp" then
-        TriggerEvent("vorp:TipBottom", t1 .. "\n" .. t2, timer)
-    elseif Config.framework == "qbr" then
-        TriggerEvent('QBCore:Notify', 9, t1 .. "\n" .. t2, timer, 0, dict, txtr, 'COLOR_WHITE')
-    end
+    TriggerEvent("vorp:TipBottom", t1 .. "\n" .. t2, timer)
 end)
 
-if Config.framework == "vorp" then
-    RegisterNetEvent('vorp:SelectedCharacter', function()
-        local player = GetPlayerServerId(tonumber(PlayerId()))
-        Wait(100)
-        TriggerServerEvent("outsider_robbery:sendPlayers", player)
-    end)
-end
 
+RegisterNetEvent('vorp:SelectedCharacter', function()
+    local player = GetPlayerServerId(tonumber(PlayerId()))
+    Wait(100)
+    TriggerServerEvent("outsider_robbery:sendPlayers", player)
+end)
 
 Citizen.CreateThread(
     function()
@@ -249,7 +237,6 @@ Citizen.CreateThread(
             local current_district = Citizen.InvokeNative(0x43AD8FC02B429D33, x, y, z, ZoneTypeId)
 
             if current_district then
-
                 if current_district == 459833523 then
                     Town = "Valentine"
                 elseif current_district == 1053078005 then
@@ -270,7 +257,6 @@ Citizen.CreateThread(
                     Town = "Tumbleweed"
                 end
             end
-
         end
     end
 )

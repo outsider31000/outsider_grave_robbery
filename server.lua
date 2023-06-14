@@ -1,22 +1,16 @@
+---@diagnostic disable: undefined-global
 data = {}
 local VorpCore = {}
 local VorpInv = {}
 
-local stafftable = {}
+local JobsTable = {}
 
-if Config.framework == "redemrp" then
-    TriggerEvent("redemrp_inventory:getData", function(call)
-        data = call
-    end)
-elseif Config.framework == "vorp" then
-    TriggerEvent("getCore", function(core)
-        VorpCore = core
-    end)
+TriggerEvent("getCore", function(core)
+    VorpCore = core
+end)
 
-    VorpInv = exports.vorp_inventory:vorp_inventoryApi()
-elseif Config.framework == "qbr" then
-    QBRItems = exports['qbr-core']:GetItems()
-end
+VorpInv = exports.vorp_inventory:vorp_inventoryApi()
+
 
 local TEXTS = Config.Texts
 local TEXTURES = Config.Textures
@@ -32,24 +26,34 @@ AddEventHandler("ricx_grave_robbery:check_shovel", function(id, Town)
             TEXTURES.alert[1], TEXTURES.alert[2], 2000)
         return
     end
-    local count = nil
-    if Config.framework == "redemrp" then
-        local itemD = data.getItem(_source, Config.ShovelItem)
-        if itemD and itemD.ItemAmount > 0 then
-            count = itemD.ItemAmount
-        end
-    elseif Config.framework == "vorp" then
-        count = VorpInv.getItemCount(_source, Config.ShovelItem)
-    elseif Config.framework == "qbr" then
-        local User = exports['qbr-core']:GetPlayer(_source)
-        local hasItem = User.Functions.GetItemByName(Config.ShovelItem)
-        if hasItem and hasItem.amount > 0 then
-            count = hasItem.amount
-        end
-    end
-    if count and count > 0 then
-        TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
-        if Config.framework == "vorp" then
+
+    local item = VorpInv.getItem(_source, Config.ShovelItem)
+    if item then
+        if not next(item.metadata) then
+            -- if not metadata we add new values
+            local newData = {
+                description = "Shovel durability %" .. 100 - 3,
+                durability = 100 - 3,
+                id = item.id
+            }
+            VorpInv.setItemMetadata(_source, item.id, newData)
+            TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
+            TriggerEvent("outsider_alertjobs", Town)
+        else
+            if item.metadata.durability <= 0 then
+                TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, "Shovel is broken",
+                    TEXTURES.alert[1], TEXTURES.alert[2], 2000)
+                return
+            end
+
+            local newData = {
+                description = "Shovel durability %" .. item.metadata.durability - 3,
+                durability = item.metadata.durability,
+                id = item.metadata.id
+            }
+
+            VorpInv.setItemMetadata(_source, item.metadata.id, newData)
+            TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
             TriggerEvent("outsider_alertjobs", Town)
         end
     else
@@ -58,30 +62,46 @@ AddEventHandler("ricx_grave_robbery:check_shovel", function(id, Town)
     end
 end)
 
+local Lines = {
+    "You have found nothing the person buried here was poor as hell",
+    "All that hard work for nothing damn fool",
+    "Why not be a farmer cant find shit with your luck",
+    "You thought it was easy? rob somone alive ",
+    "God is watching you and has punished you ,just like he pusnished the man in here your next..."
+
+}
+
 RegisterServerEvent("ricx_grave_robbery:reward")
 AddEventHandler("ricx_grave_robbery:reward", function(id)
     local _source = source
     Citizen.Wait(math.random(200, 800))
+
+    ---@type table
+    local Rewards = Config.Graves[id].Rewards
+    local random = math.random(1, #Rewards)
+
+
     if DiggedGraves[id] == true then
         TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.GraveRobbed,
             TEXTURES.alert[1], TEXTURES.alert[2], 2000)
         return
     end
+
     DiggedGraves[id] = true
-    local itemnr = math.random(1, #Config.Rewards)
-    local item = Config.Rewards[itemnr].item
-    local label = Config.Rewards[itemnr].label
-    if Config.framework == "redemrp" then
-        local itemD = data.getItem(_source, item)
-        itemD.AddItem(1)
-    elseif Config.framework == "vorp" then
-        VorpInv.addItem(_source, item, 1)
-    elseif Config.framework == "qbr" then
-        local User = exports['qbr-core']:GetPlayer(_source)
-        User.Functions.AddItem(item, 1)
+    local lucky = 2
+    local chance = math.random(1, 5)
+    if lucky == chance then
+        local Item = Config.Graves[id].Rewards[random].item
+        local label = Config.Graves[id].Rewards[random].label
+        VorpInv.addItem(_source, Item, 1)
+        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery,
+            TEXTS.FoundItem .. "\n+ " .. label
+            , TEXTURES.alert[1], TEXTURES.alert[2], 2000)
+    else
+        local rand = math.random(1, #Lines)
+        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, Lines[rand],
+            TEXTURES.alert[1], TEXTURES.alert[2], 2000)
     end
-    TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.FoundItem .. "\n+ " .. label
-        , TEXTURES.alert[1], TEXTURES.alert[2], 2000)
 end)
 
 function CheckTable(table, element)
@@ -94,42 +114,43 @@ function CheckTable(table, element)
 end
 
 RegisterServerEvent("outsider_robbery:sendPlayers", function(source)
+    if not source then return end
     local _source = source
-    local user = VorpCore.getUser(_source).getUsedCharacter
-    local job = user.job -- player job
+    local user = VorpCore.getUser(_source)
 
-    if CheckTable(Config.JobsToAlert, job) then -- if player exist and job equals to config then add to table
-        stafftable[#stafftable + 1] = _source -- id
+    if user then
+        local job = user.getUsedCharacter.job                           -- player job
+
+        if CheckTable(Config.JobsToAlert, job) then                     -- if player exist and job equals to config then add to table
+            JobsTable[#JobsTable + 1] = { source = _source, job = job } -- id
+        end
     end
 end)
 
 -- remove player from table when leaving
 AddEventHandler('playerDropped', function()
     local _source = source
-    for index, value in pairs(stafftable) do
-        if value == _source then
-            stafftable[index] = nil
+    for index, value in pairs(JobsTable) do
+        if value.source == _source then
+            JobsTable[index] = nil
         end
     end
-
 end)
 
 AddEventHandler('outsider_alertjobs', function(Town)
-    for _, jobHolder in pairs(stafftable) do
-        for key, v in pairs(Config.JobsToAlert) do
+    for _, jobHolder in pairs(JobsTable) do
+        local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, jobHolder.job)
 
-            local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, v)
-            if Config.synSociety then
-                if onduty then
-                    VorpCore.NotifyLeft(jobHolder, Town, "grave robbery was witnessed ", "generic_textures",
-                        "temp_pedshot", 8000,
-                        "COLOR_WHITE")
-                end
-            else
-                VorpCore.NotifyLeft(jobHolder, Town, "grave robbery was witnessed ", "generic_textures",
+        if Config.synSociety then
+            if onduty then
+                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
                     "temp_pedshot", 8000,
                     "COLOR_WHITE")
             end
+        else
+            VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
+                "temp_pedshot", 8000,
+                "COLOR_WHITE")
         end
     end
 end)
