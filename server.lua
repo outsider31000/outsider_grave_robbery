@@ -48,7 +48,7 @@ AddEventHandler("ricx_grave_robbery:check_shovel", function(id, Town)
 
             local newData = {
                 description = "Shovel durability %" .. item.metadata.durability - 3,
-                durability = item.metadata.durability,
+                durability = item.metadata.durability - 3,
                 id = item.metadata.id
             }
 
