@@ -47,8 +47,15 @@ Config.Textures = {
 
 Config.UseHours = true                          -- if true it will use hours meaning only can be robbed at night
 Config.Hours = { 21, 07 }                       -- 9pm to 7am is allowed to make a robbery
-Config.JobsToAlert = { "police", "undertaker" } -- to alert these jobs if they are on duty using society
-Config.synSociety = true
+Config.synSociety = false
+Config.outsider_jobalert = {
+    usealert = true,
+    police = "alertlaw", -- job of player and command to alert same as in the script
+    undertaker = "alertundertaker",
+    -- add more here
+}
+-- add jobs here that can be alerted when a grave is being robbed
+Config.JobsToAlert = { "police", "undertaker" }
 
 Config.Graves = {
     [1] = {
