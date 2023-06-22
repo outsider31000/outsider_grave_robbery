@@ -137,16 +137,19 @@ AddEventHandler('playerDropped', function()
     end
 end)
 
+
 AddEventHandler('outsider_alertjobs', function(Town)
     for _, jobHolder in pairs(JobsTable) do
-        local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, jobHolder.job)
+        if Config.synSociety and not Config.outsider_jobalert.usealert then
+            local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, jobHolder.job)
 
-        if Config.synSociety then
             if onduty then
                 VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
                     "temp_pedshot", 8000,
                     "COLOR_WHITE")
             end
+        elseif Config.outsider_jobalert.usealert and not Config.synSociety then
+            TriggerEvent("outsider_alertjobs_Custom", source, Config.outsider_jobalert[jobHolder.job])
         else
             VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
                 "temp_pedshot", 8000,
@@ -154,3 +157,4 @@ AddEventHandler('outsider_alertjobs', function(Town)
         end
     end
 end)
+
