@@ -149,7 +149,7 @@ AddEventHandler('outsider_alertjobs', function(Town)
                     "COLOR_WHITE")
             end
         elseif Config.outsider_jobalert.usealert and not Config.synSociety then
-           TriggerEvent("outsider_alertjobs_Custom", source, Config.AlertName)
+           TriggerEvent("outsider_alertjobs_Custom", source, Config.outsider_jobalert[jobHolder.job])
         else
             VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
                 "temp_pedshot", 8000,
