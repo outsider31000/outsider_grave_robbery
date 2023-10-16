@@ -38,7 +38,7 @@ AddEventHandler("ricx_grave_robbery:check_shovel", function(id, Town)
             }
             VorpInv.setItemMetadata(_source, item.id, newData)
             TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
-            TriggerEvent("outsider_alertjobs", Town)
+            TriggerEvent("outsider_alertjobs", _source,Town)
         else
             if item.metadata.durability <= 0 then
                 TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, "Shovel is broken",
@@ -138,7 +138,7 @@ AddEventHandler('playerDropped', function()
 end)
 
 
-AddEventHandler('outsider_alertjobs', function(Town)
+AddEventHandler('outsider_alertjobs', function(source,Town)
     for _, jobHolder in pairs(JobsTable) do
         if Config.synSociety and not Config.outsider_jobalert.usealert then
             local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, jobHolder.job)
@@ -149,7 +149,7 @@ AddEventHandler('outsider_alertjobs', function(Town)
                     "COLOR_WHITE")
             end
         elseif Config.outsider_jobalert.usealert and not Config.synSociety then
-           TriggerEvent("outsider_alertjobs_Custom", jobHolder.source, Config.outsider_jobalert[jobHolder.job])
+           TriggerEvent("outsider_alertjobs_Custom", source, Config.outsider_jobalert[jobHolder.job])
         else
             VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
                 "temp_pedshot", 8000,
