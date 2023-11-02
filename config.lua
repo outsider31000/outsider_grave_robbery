@@ -1924,7 +1924,7 @@ Config.Graves = {
             { item = 'goldband', label = 'A Gold Band' },
             { item = 'silverband', label = 'A Silver Band' },
             { item = 'pinksapphirering', label = 'A Pink Sapphire Ring' },
-        }
+        },
         Rewards = {
             { item = "ancientcoin", label = "An Ancient Coin" },
             { item = "ancientcoin2", label = "An Ancient Broach" },
