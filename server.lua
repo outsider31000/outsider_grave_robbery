@@ -1,20 +1,10 @@
----@diagnostic disable: undefined-global
-data = {}
-local VorpCore = {}
-local VorpInv = {}
 
+local data = {}
+local VorpCore = exports.vorp_core:GetCore()
+local VorpInv = exports.vorp_inventory:vorp_inventoryApi()
 local JobsTable = {}
-
-TriggerEvent("getCore", function(core)
-    VorpCore = core
-end)
-
-VorpInv = exports.vorp_inventory:vorp_inventoryApi()
-
-
 local TEXTS = Config.Texts
 local TEXTURES = Config.Textures
-
 local DiggedGraves = {}
 
 RegisterServerEvent("ricx_grave_robbery:check_shovel")
@@ -54,11 +44,10 @@ AddEventHandler("ricx_grave_robbery:check_shovel", function(id, Town)
 
             VorpInv.setItemMetadata(_source, item.metadata.id, newData)
             TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
-            TriggerEvent("outsider_alertjobs", Town)
+            TriggerEvent("outsider_alertjobs",_source, Town)
         end
     else
-        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.NoShovel,
-            TEXTURES.alert[1], TEXTURES.alert[2], 2000)
+        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.NoShovel,  TEXTURES.alert[1], TEXTURES.alert[2], 2000)
     end
 end)
 
@@ -76,14 +65,11 @@ AddEventHandler("ricx_grave_robbery:reward", function(id)
     local _source = source
     Citizen.Wait(math.random(200, 800))
 
-    ---@type table
     local Rewards = Config.Graves[id].Rewards
     local random = math.random(1, #Rewards)
 
-
     if DiggedGraves[id] == true then
-        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.GraveRobbed,
-            TEXTURES.alert[1], TEXTURES.alert[2], 2000)
+        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.GraveRobbed, TEXTURES.alert[1], TEXTURES.alert[2], 2000)
         return
     end
 
@@ -94,13 +80,10 @@ AddEventHandler("ricx_grave_robbery:reward", function(id)
         local Item = Config.Graves[id].Rewards[random].item
         local label = Config.Graves[id].Rewards[random].label
         VorpInv.addItem(_source, Item, 1)
-        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery,
-            TEXTS.FoundItem .. "\n+ " .. label
-            , TEXTURES.alert[1], TEXTURES.alert[2], 2000)
+        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery,  TEXTS.FoundItem .. "\n+ " .. label  , TEXTURES.alert[1], TEXTURES.alert[2], 2000)
     else
         local rand = math.random(1, #Lines)
-        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, Lines[rand],
-            TEXTURES.alert[1], TEXTURES.alert[2], 2000)
+        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, Lines[rand], TEXTURES.alert[1], TEXTURES.alert[2], 2000)
     end
 end)
 
@@ -120,7 +103,6 @@ RegisterServerEvent("outsider_robbery:sendPlayers", function(source)
 
     if user then
         local job = user.getUsedCharacter.job                           -- player job
-
         if CheckTable(Config.JobsToAlert, job) then                     -- if player exist and job equals to config then add to table
             JobsTable[#JobsTable + 1] = { source = _source, job = job } -- id
         end
@@ -139,22 +121,40 @@ end)
 
 
 AddEventHandler('outsider_alertjobs', function(source,Town)
-    for _, jobHolder in pairs(JobsTable) do
-        if Config.synSociety and not Config.outsider_jobalert.usealert then
-            local onduty = exports["syn_society"]:IsPlayerOnDuty(jobHolder, jobHolder.job)
+	for _, jobHolder in pairs(JobsTable) do
+		-- use of society and outsider job alerts and not policeman
+		if Config.synSociety and not Config.outsider_policeman then
+			local onduty = exports.syn_society:IsPlayerOnDuty(jobHolder.source, jobHolder.job)
+			if onduty then
+				if Config.outsider_jobalert?.usealert and Config.outsider_jobalert[jobHolder.job] then
+					exports.outsider_jobalerts:InsertAlert(source, Config.outsider_jobalert[jobHolder.job])
+				else
+					VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
+				end
+			end
+		end
 
-            if onduty then
-                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
-                    "temp_pedshot", 8000,
-                    "COLOR_WHITE")
-            end
-        elseif Config.outsider_jobalert.usealert and not Config.synSociety and Config.outsider_jobalert[jobHolder.job] then
-           TriggerEvent("outsider_alertjobs_Custom", source, Config.outsider_jobalert[jobHolder.job])
-        else
-            VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
-                "temp_pedshot", 8000,
-                "COLOR_WHITE")
-        end
-    end
+		-- use of outsider job alerts but no society and no policeman
+		if Config.outsider_jobalert?.usealert and not Config.synSociety and not Config.outsider_policeman and Config.outsider_jobalert[jobHolder.job] then
+			exports.outsider_jobalerts:InsertAlert(source, Config.outsider_jobalert[jobHolder.job])
+		end
+
+		-- if policeman and not society
+		if Config.outsider_policeman and not Config.synSociety then
+			local onduty = Player(jobHolder.source).state.IsOnDuty
+			if onduty then
+				if Config.outsider_jobalert?.usealert and Config.outsider_jobalert[jobHolder.job] then
+					exports.outsider_jobalerts:InsertAlert(source, Config.outsider_jobalert[jobHolder.job])
+				else
+					VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
+				end
+			end
+		end
+
+		-- if not society and not outsider job alerts and not policeman
+		if not Config.synSociety and not Config.outsider_jobalert?.usealert and not Config.outsider_policeman then
+			VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
+		end
+	end
 end)
 
