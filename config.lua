@@ -47,16 +47,14 @@ Config.Textures = {
 
 Config.UseHours = true                          -- if true it will use hours meaning only can be robbed at night
 Config.Hours = { 21, 07 }                       -- 9pm to 7am is allowed to make a robbery
-Config.synSociety = false -- true if you have it to use onduty system, outsider polcieman must be false
-Config.outsider_policeman = false -- true if you want to use the duty system syn society must be false
-Config.outsider_jobalert = {
-    usealert = true, -- use job alerts ?
-    police = "alertpolice", -- job of player and command to alert same as in the script  jobname = "alertcommand"
-    undertaker = "alertundertaker",
-    -- add more here
+Config.synSociety = false         -- if you have jobalerts leave false, if you only have syn society then leave true and who is on duty will be alerted leave po;icemaan to false
+Config.outsider_policeman = false -- if you have jobalerts leave this to false if you only have policeman leave this true and who is on duty will be alerted, leve syn to false
+Config.outsider_jobalert = { -- if you have ob alerts put syn and policeman to false
+    usealert = true,              -- use job alerts ?
+    command = "graverobbery"      -- command to use for job alerts that's in config of job alerts
 }
--- add jobs here tocollect them when players enter, these jobs will be notified for grave robberies make sure if you use jobalerts to have same jobs there
-Config.JobsToAlert = { "police", "undertaker" }
+
+Config.JobsToAlert = { "police", "undertaker" } -- if you use syn or policeman add jobs here, if you use job alerts you can ignore this
 
 Config.Graves = {
     --Rhodes
