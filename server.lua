@@ -120,41 +120,27 @@ AddEventHandler('playerDropped', function()
 end)
 
 
-AddEventHandler('outsider_alertjobs', function(source,Town)
-	for _, jobHolder in pairs(JobsTable) do
-		-- use of society and outsider job alerts and not policeman
-		if Config.synSociety and not Config.outsider_policeman then
-			local onduty = exports.syn_society:IsPlayerOnDuty(jobHolder.source, jobHolder.job)
-			if onduty then
-				if Config.outsider_jobalert?.usealert and Config.outsider_jobalert[jobHolder.job] then
-					exports.outsider_jobalerts:InsertAlert(source, Config.outsider_jobalert[jobHolder.job])
-				else
-					VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
-				end
-			end
-		end
+AddEventHandler('outsider_alertjobs', function(source, Town)
 
-		-- use of outsider job alerts but no society and no policeman
-		if Config.outsider_jobalert?.usealert and not Config.synSociety and not Config.outsider_policeman and Config.outsider_jobalert[jobHolder.job] then
-			exports.outsider_jobalerts:InsertAlert(source, Config.outsider_jobalert[jobHolder.job])
-		end
+    if Config.outsider_jobalert?.usealert then
+        return exports.outsider_jobalerts:InsertAlert(source, Config.outsider_jobalert.command)
+    end
 
-		-- if policeman and not society
-		if Config.outsider_policeman and not Config.synSociety then
-			local onduty = Player(jobHolder.source).state.IsOnDuty
-			if onduty then
-				if Config.outsider_jobalert?.usealert and Config.outsider_jobalert[jobHolder.job] then
-					exports.outsider_jobalerts:InsertAlert(source, Config.outsider_jobalert[jobHolder.job])
-				else
-					VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
-				end
-			end
-		end
-
-		-- if not society and not outsider job alerts and not policeman
-		if not Config.synSociety and not Config.outsider_jobalert?.usealert and not Config.outsider_policeman then
-			VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
-		end
-	end
+    for _, jobHolder in pairs(JobsTable) do
+        
+        if Config.synSociety and not Config.outsider_policeman then
+            local onduty = exports.syn_society:IsPlayerOnDuty(jobHolder.source, jobHolder.job)
+            if onduty then
+                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
+                    "temp_pedshot", 8000, "COLOR_WHITE")
+            end
+        else
+            local onduty = Player(jobHolder.source).state.IsOnDuty
+            if onduty then
+                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
+                    "temp_pedshot", 8000, "COLOR_WHITE")
+            end
+        end
+    end
 end)
 
