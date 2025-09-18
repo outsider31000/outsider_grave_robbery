@@ -44,7 +44,9 @@ AddEventHandler("ricx_grave_robbery:check_shovel", function(id, Town)
 
             VorpInv.setItemMetadata(_source, item.metadata.id, newData)
             TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
-            TriggerEvent("outsider_alertjobs",_source, Town)
+            SetTimeout(10000,function()    -- wait 10 seconds
+               TriggerEvent("outsider_alertjobs",_source, Town)
+            end)
         end
     else
         TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.NoShovel,  TEXTURES.alert[1], TEXTURES.alert[2], 2000)
@@ -131,14 +133,12 @@ AddEventHandler('outsider_alertjobs', function(source, Town)
         if Config.synSociety and not Config.outsider_policeman then
             local onduty = exports.syn_society:IsPlayerOnDuty(jobHolder.source, jobHolder.job)
             if onduty then
-                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
-                    "temp_pedshot", 8000, "COLOR_WHITE")
+                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
             end
-        else
-            local onduty = Player(jobHolder.source).state.IsOnDuty
+        elseif Config.outsider_policeman then
+            local onduty = exports.outsider_policeman:IsOnPoliceDuty(jobHolder.source)
             if onduty then
-                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures",
-                    "temp_pedshot", 8000, "COLOR_WHITE")
+                VorpCore.NotifyLeft(jobHolder.source, Town, "grave robbery was witnessed ", "generic_textures", "temp_pedshot", 8000, "COLOR_WHITE")
             end
         end
     end
