@@ -9,7 +9,7 @@ local DIGGING_GRAVE <const> = {}
 RegisterServerEvent("ricx_grave_robbery:check_shovel", function(id, Town)
     local _source = source
 
-    if DIGGED_GRAVES[id] == true then
+    if DIGGED_GRAVES[id] then
         TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, TEXTS.GraveRobbed,
             TEXTURES.alert[1], TEXTURES.alert[2], 2000)
         return
