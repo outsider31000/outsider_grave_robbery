@@ -90,19 +90,23 @@ RegisterServerEvent("ricx_grave_robbery:reward", function()
     DIGGED_GRAVES[id] = true
 
     local Rewards = Config.Graves[id].Rewards
-    for _, value in pairs(Rewards) do
+    local found = false
+    for _, value in ipairs(Rewards) do
         if math.random() <= value.chance then
             local canCarryItem = exports.vorp_inventory:canCarryItem(_source, value.item, value.amount)
             if canCarryItem then
+                found = true
                 exports.vorp_inventory:addItem(_source, value.item, value.amount)
                 TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery,
                     TEXTS.FoundItem .. "\n+ " .. value.label, TEXTURES.alert[1], TEXTURES.alert[2], 2000)
             end
-        else
-            local rand = math.random(1, #Config.Lines)
-            TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, Config.Lines[rand],
-                TEXTURES.alert[1], TEXTURES.alert[2], 2000)
         end
+    end
+
+    if not found then
+        local rand = math.random(1, #Config.Lines)
+        TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery, Config.Lines[rand],
+            TEXTURES.alert[1], TEXTURES.alert[2], 2000)
     end
 
     if Config.GraveRobberyCooldown then
