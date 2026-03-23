@@ -78,7 +78,7 @@ CreateThread(function()
                         -- optimisie loop theres 250 entries in the config.Graves table
                         dist = #(pcoords - v.coords)
                         sleep = 300
-                        if dist < 1.0 then
+                        if dist <= 1.5 then
                             sleep = 0
                             local label = VarString(10, 'LITERAL_STRING', TEXTS.GraveDisplay .. " " .. v.name)
                             UiPromptSetActiveGroupThisFrame(PromptGroup, label, 0, 0, 0, 0)
