@@ -76,7 +76,9 @@ CreateThread(function()
                 if dist < 3.0 then
                     repeat
                         -- optimisie loop theres 250 entries in the config.Graves table
+                        pcoords = GetEntityCoords(pped)
                         dist = #(pcoords - v.coords)
+                        isdead = IsEntityDead(pped)
                         sleep = 300
                         if dist <= 1.5 then
                             sleep = 0
@@ -93,7 +95,7 @@ CreateThread(function()
                                 Wait(2000)
                             end
                         end
-                        isdead = IsEntityDead(pped)
+
                         Wait(sleep)
                     until dist > 3.0 or isdead
                 end
