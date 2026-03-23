@@ -43,7 +43,7 @@ RegisterServerEvent("ricx_grave_robbery:check_shovel", function(id, Town)
             }
             exports.vorp_inventory:setItemMetadata(_source, item.id, newData)
             DIGGING_GRAVE[_source] = id
-            TriggerClientEvent("ricx_grave_robbery:start_dig", _source, Config.Graves[id].heading)
+            TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
             SetTimeout(10000, function() -- wait 10 seconds to alert jobs
                 TriggerEvent("outsider_alertjobs", _source, Town)
             end)
@@ -61,7 +61,7 @@ RegisterServerEvent("ricx_grave_robbery:check_shovel", function(id, Town)
             }
 
             exports.vorp_inventory:setItemMetadata(_source, item.metadata.id, newData)
-            TriggerClientEvent("ricx_grave_robbery:start_dig", _source, Config.Graves[id].heading)
+            TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
             DIGGING_GRAVE[_source] = id
             SetTimeout(10000, function() -- wait 10 seconds to alert jobs
                 TriggerEvent("outsider_alertjobs", _source, Town)

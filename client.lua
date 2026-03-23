@@ -147,7 +147,7 @@ function AttachEnt(from, to, boneIndex, x, y, z, pitch, roll, yaw, useSoftPinnin
         vertex, fixedRot, false, false)
 end
 
-RegisterNetEvent("ricx_grave_robbery:start_dig", function(heading)
+RegisterNetEvent("ricx_grave_robbery:start_dig", function(id)
     if shovelObject then
         DeleteObject(shovelObject)
         SetEntityAsNoLongerNeeded(shovelObject)
@@ -156,7 +156,8 @@ RegisterNetEvent("ricx_grave_robbery:start_dig", function(heading)
     digging = true
     local pedp = PlayerPedId()
     local pc = GetEntityCoords(pedp)
-    local model = Config.Dig.shovel
+    local value = Config.Graves[id]
+    local model = value.DigAnimation.shovel
 
     if not HasModelLoaded(model) then
         RequestModel(model, false)
@@ -166,10 +167,10 @@ RegisterNetEvent("ricx_grave_robbery:start_dig", function(heading)
     end
 
     shovelObject = CreateObject(model, pc.x, pc.y, pc.z, true, true, true)
-    local boneIndex = GetEntityBoneIndexByName(pedp, Config.Dig.bone)
-    local Attach = Config.Dig.pos
-    SetEntityHeading(PlayerPedId(), heading)
-    local anim = Config.Dig.anim
+    local boneIndex = GetEntityBoneIndexByName(pedp, value.DigAnimation.bone)
+    local Attach = value.DigAnimation.pos
+    SetEntityHeading(PlayerPedId(), value.heading)
+    local anim = value.DigAnimation.anim
 
     if not HasAnimDictLoaded(anim[1]) then
         RequestAnimDict(anim[1])
@@ -180,7 +181,7 @@ RegisterNetEvent("ricx_grave_robbery:start_dig", function(heading)
 
     TaskPlayAnim(pedp, anim[1], anim[2], 1.0, 1.0, -1, 1, 0, false, false, false)
     AttachEnt(shovelObject, pedp, boneIndex, Attach[1], Attach[2], Attach[3], Attach[4], Attach[5], Attach[6], 0, 1, 1, 1)
-    TriggerEvent("ricx_grave_robbery:digging_timer")
+    TriggerEvent("ricx_grave_robbery:digging_timer", id)
     Wait(200)
     RemoveAnimDict(anim[1])
     SetModelAsNoLongerNeeded(model)
@@ -188,7 +189,8 @@ end)
 
 
 AddEventHandler("ricx_grave_robbery:digging_timer", function(id)
-    local timer = Config.DiggingTimer
+    local value = Config.Graves[id]
+    local timer = value.DigAnimation.Timer
     local timer2 = 0
     while timer2 ~= timer and digging do
         Wait(1000)
