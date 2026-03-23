@@ -2,7 +2,7 @@
 local TEXTS = Config.Texts
 local TEXTURES = Config.Textures
 local praying = false
-local digging = true
+local digging = false
 local shovelObject = nil
 local PromptKey
 local PromptKey2
