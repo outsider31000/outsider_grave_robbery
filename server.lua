@@ -32,6 +32,7 @@ RegisterServerEvent("ricx_grave_robbery:check_shovel", function(id, Town)
         return print("missing tool required for grave", "at index:", id)
     end
 
+
     local item = exports.vorp_inventory:getItem(_source, Config.Graves[id].ToolRequired)
     if item then
         if not next(item.metadata) then
@@ -39,7 +40,6 @@ RegisterServerEvent("ricx_grave_robbery:check_shovel", function(id, Town)
             local newData = {
                 description = "Shovel durability %" .. 100 - 3,
                 durability = 100 - 3,
-                id = item.id
             }
             exports.vorp_inventory:setItemMetadata(_source, item.id, newData)
             DIGGING_GRAVE[_source] = id
@@ -57,10 +57,9 @@ RegisterServerEvent("ricx_grave_robbery:check_shovel", function(id, Town)
             local newData = {
                 description = "Shovel durability %" .. item.metadata.durability - 3,
                 durability = item.metadata.durability - 3,
-                id = item.metadata.id
             }
 
-            exports.vorp_inventory:setItemMetadata(_source, item.metadata.id, newData)
+            exports.vorp_inventory:setItemMetadata(_source, item.id, newData)
             TriggerClientEvent("ricx_grave_robbery:start_dig", _source, id)
             DIGGING_GRAVE[_source] = id
             SetTimeout(10000, function() -- wait 10 seconds to alert jobs
@@ -97,8 +96,7 @@ RegisterServerEvent("ricx_grave_robbery:reward", function()
             if canCarryItem then
                 found = true
                 exports.vorp_inventory:addItem(_source, value.item, value.amount)
-                TriggerClientEvent("Notification:left_grave_robbery", _source, TEXTS.GraveRobbery,
-                    TEXTS.FoundItem .. "\n+ " .. value.label, TEXTURES.alert[1], TEXTURES.alert[2], 2000)
+                VorpCore.NotifyRightTip(_source, TEXTS.FoundItem .. "\n+ " .. value.label, 5000)
             end
         end
     end
