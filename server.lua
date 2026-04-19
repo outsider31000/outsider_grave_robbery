@@ -96,7 +96,7 @@ RegisterServerEvent("ricx_grave_robbery:reward", function()
             if canCarryItem then
                 found = true
                 exports.vorp_inventory:addItem(_source, value.item, value.amount)
-                VorpCore.NotifyRightTip(_source, TEXTS.FoundItem .. "\n+ " .. value.label, 5000)
+                VorpCore.NotifyRightTip(_source, TEXTS.FoundItem .. " + " .. value.label, 5000)
             end
         end
     end
