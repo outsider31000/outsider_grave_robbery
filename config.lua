@@ -36,7 +36,7 @@ Config.Texts = {
     CantDoThat = "You cant do that now!",
     GraveRobbed = "Grave is already robbed!",
     NoShovel = "No shovel item!",
-    FoundItem = "You have found some item!",
+    FoundItem = "You have found ",
 }
 
 Config.Textures = {
@@ -68,6 +68,8 @@ Config.outsider_jobalert = {      -- if you have ob alerts put syn and policeman
 Config.JobsToAlert = { "police", "undertaker" } -- if you use syn or policeman add jobs here, if you use job alerts you can ignore this
 
 Config.GraveRobberyCooldown = 10                -- after 10 minutes grave can be robbed again
+
+Config.RewardsOneItem = true                    -- if true it will give one item per grave instead of looking for all item chances, if false will use the chances for all items
 
 -- use this table to organise items and not duplicate code
 local graveItems = {

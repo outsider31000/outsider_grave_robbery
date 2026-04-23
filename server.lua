@@ -92,11 +92,14 @@ RegisterServerEvent("ricx_grave_robbery:reward", function()
     local found = false
     for _, value in ipairs(Rewards) do
         if math.random() <= value.chance then
-            local canCarryItem = exports.vorp_inventory:canCarryItem(_source, value.item, value.amount)
+            local canCarryItem <const> = exports.vorp_inventory:canCarryItem(_source, value.item, value.amount)
             if canCarryItem then
                 found = true
                 exports.vorp_inventory:addItem(_source, value.item, value.amount)
-                VorpCore.NotifyRightTip(_source, TEXTS.FoundItem .. " + " .. value.label, 5000)
+                VorpCore.NotifyRightTip(_source, TEXTS.FoundItem .. " x" .. value.amount .. " " .. value.label, 5000)
+                if Config.RewardsOneItem then
+                    break
+                end
             end
         end
     end
